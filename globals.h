@@ -33,5 +33,8 @@ DHT11 dht11(DhtPin);
 
 // WiFi Credentials
 // store these in file secrets.h
+// WiFi Credentials
+// const char* ssid = "abcd";
+// const char* password = "1234";
 
 #endif
