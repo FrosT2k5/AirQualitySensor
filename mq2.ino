@@ -32,6 +32,11 @@ float readPropane() {
     return MQ2.readSensor();
 }
 
+int rawMQ2() {
+  int mq2Value = analogRead(Pin2);
+  return mq2Value;
+}
+
 
 void calcR0_MQ2() {
     float calcR0_MQ2 = 0;
@@ -53,6 +58,7 @@ void calcR0_MQ2() {
         while (1);
     }
 
+    MQ2.setR0(calcR0_MQ2/10);
     Serial.print("MQ2 R0: ");
     Serial.println(calcR0_MQ2);
 

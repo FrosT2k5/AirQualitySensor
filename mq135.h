@@ -10,7 +10,9 @@ float readCO2();
 float readToluen();
 float readNH4();
 float readAceton();
+int rawMQ135();
 void calcR0_MQ135();
+JsonDocument readALLMQ135();
 float R0_MQ135 = 1800; // Calculated from calibration routine
 
 #endif

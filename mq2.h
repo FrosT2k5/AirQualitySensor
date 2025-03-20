@@ -9,6 +9,7 @@ float readLPG();
 float readCO_MQ2();
 float readAlcohol_MQ2();
 float readPropane();
+int rawMQ2();
 void calcR0_MQ2();
 float R0_MQ2 = 60; // Calculated from calibration routine
 

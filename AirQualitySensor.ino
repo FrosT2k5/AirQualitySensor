@@ -2,6 +2,7 @@
 #include "mq135.h"
 #include "mq2.h"
 #include "dht11.h"
+#include "server.h"
 
 unsigned long lastUpdate = 0;
 int displayIndex = 0;
@@ -15,6 +16,10 @@ void setup() {
     initMQ2();
     initDHT();
 
+    // Initialize the server
+    initServer();
+
+    // Run calibration routines and update values
     calcR0_MQ2();
     calcR0_MQ135();
 
@@ -38,8 +43,8 @@ void loop() {
     float Alcohol_MQ2 = readAlcohol_MQ2();
     float Propane = readPropane();
 
-    int mq1Value = analogRead(Pin);
-    int mq2Value = analogRead(Pin2);
+    int mq1Value = rawMQ135();
+    int mq2Value = rawMQ2();
 
     Serial.print("CO2: "); Serial.print(CO2);
     Serial.print(" | Alcohol: "); Serial.print(Alcohol);
@@ -56,7 +61,7 @@ void loop() {
     Serial.print("Temperature: "); Serial.print(temperature);
     Serial.print(" | Humidity: "); Serial.println(humidity);
 
-    if (mq1Value > 700 || mq2Value > 1100) {
+    if (mq1Value > MQ135_BUZZ_VALUE || mq2Value > MQ2_BUZZ_VALUE) {
         digitalWrite(BuzzPin, HIGH);
     } else {
         digitalWrite(BuzzPin, LOW);
@@ -99,6 +104,12 @@ void loop() {
                 break;
         }
         displayIndex = (displayIndex + 1) % 5;
+    }
+
+    // Process server requests
+    WiFiClient client = server.available();
+    if (client.connected()) {
+      app.process(&client);
     }
     delay(200); // Sampling frequency
 }

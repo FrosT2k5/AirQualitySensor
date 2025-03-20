@@ -1,6 +1,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <ArduinoJson.h> 
 #include <WiFi.h>
 #include <MQUnifiedsensor.h>
 #include <LiquidCrystal_I2C.h>
@@ -25,6 +26,10 @@ int lcdRows = 2;
 
 // LCD Object
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
+
+// Buzzer Constants
+int MQ135_BUZZ_VALUE = 1500; // 1500 in lab3
+int MQ2_BUZZ_VALUE = 1100;
 
 // Sensor Objects
 MQUnifiedsensor MQ135(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, "MQ-135");

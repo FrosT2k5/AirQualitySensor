@@ -37,6 +37,28 @@ float readAceton() {
     return MQ135.readSensor();
 }
 
+int rawMQ135() {
+  int mq1Value = analogRead(Pin);
+  return mq1Value;
+}
+
+
+JsonDocument readALLMQ135() {
+    JsonDocument doc;
+
+    MQ135.update();
+
+    doc["CO"] = readCO();
+    doc["Alcohol"] = readAlcohol();
+    doc["CO2"] = readCO2();
+    doc["Toluen"] = readToluen();
+    doc["NH4"] = readNH4();
+    doc["Aceton"] = readAceton();
+    doc["Raw"] = rawMQ135();
+
+    return doc;
+}
+
 // This function calculates the R0 value and prints it in serial console
 void calcR0_MQ135() {
     float calcR0 = 0;
@@ -58,6 +80,7 @@ void calcR0_MQ135() {
         while (1);
     }
 
+    MQ135.setR0(calcR0/10);
     Serial.println("Calibration done!");
     Serial.print("MQ135 R0: ");
     Serial.println(calcR0);
