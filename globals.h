@@ -30,7 +30,7 @@ LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
 // Buzzer Constants
 int MQ135_BUZZ_VALUE = 1500; // 1500 in lab3
 int MQ2_BUZZ_VALUE = 1100;
-int ENABLE_BUZZER = 1;
+int ENABLE_BUZZER = 0;
 
 // Sensor Objects
 MQUnifiedsensor MQ135(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, "MQ-135");
