@@ -61,7 +61,7 @@ void loop() {
     Serial.print("Temperature: "); Serial.print(temperature);
     Serial.print(" | Humidity: "); Serial.println(humidity);
 
-    if (mq1Value > MQ135_BUZZ_VALUE || mq2Value > MQ2_BUZZ_VALUE) {
+    if (ENABLE_BUZZER && (mq1Value > MQ135_BUZZ_VALUE || mq2Value > MQ2_BUZZ_VALUE)) {
         digitalWrite(BuzzPin, HIGH);
     } else {
         digitalWrite(BuzzPin, LOW);
