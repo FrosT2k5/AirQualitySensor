@@ -46,20 +46,22 @@ void loop() {
     int mq1Value = rawMQ135();
     int mq2Value = rawMQ2();
 
-    Serial.print("CO2: "); Serial.print(CO2);
-    Serial.print(" | Alcohol: "); Serial.print(Alcohol);
-    Serial.print(" | CO: "); Serial.println(CO);
-    Serial.print("H2: "); Serial.print(H2);
-    Serial.print(" | LPG: "); Serial.print(LPG);
-    Serial.print(" | CO_MQ2: "); Serial.print(CO_MQ2);
-    Serial.print(" | Alcohol_MQ2: "); Serial.print(Alcohol_MQ2);
-    Serial.print(" | Butane: "); Serial.println(Propane);
+    if (ENABLE_SERIAL_DEBUG) {
+      Serial.print("CO2: "); Serial.print(CO2);
+      Serial.print(" | Alcohol: "); Serial.print(Alcohol);
+      Serial.print(" | CO: "); Serial.println(CO);
+      Serial.print("H2: "); Serial.print(H2);
+      Serial.print(" | LPG: "); Serial.print(LPG);
+      Serial.print(" | CO_MQ2: "); Serial.print(CO_MQ2);
+      Serial.print(" | Alcohol_MQ2: "); Serial.print(Alcohol_MQ2);
+      Serial.print(" | Butane: "); Serial.println(Propane);
 
-    Serial.print("MQ135 raw: "); Serial.println(mq1Value);
-    Serial.print("MQ2 raw: "); Serial.println(mq2Value);
+      Serial.print("MQ135 raw: "); Serial.println(mq1Value);
+      Serial.print("MQ2 raw: "); Serial.println(mq2Value);
 
-    Serial.print("Temperature: "); Serial.print(temperature);
-    Serial.print(" | Humidity: "); Serial.println(humidity);
+      Serial.print("Temperature: "); Serial.print(temperature);
+      Serial.print(" | Humidity: "); Serial.println(humidity);
+    }
 
     if (ENABLE_BUZZER && (mq1Value > MQ135_BUZZ_VALUE || mq2Value > MQ2_BUZZ_VALUE)) {
         digitalWrite(BuzzPin, HIGH);

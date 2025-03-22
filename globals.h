@@ -31,7 +31,7 @@ LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
 int MQ135_BUZZ_VALUE = 1500; // 1500 in lab3
 int MQ2_BUZZ_VALUE = 1100;
 int ENABLE_BUZZER = 0;
-
+int ENABLE_SERIAL_DEBUG = 0;
 // Sensor Objects
 MQUnifiedsensor MQ135(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, "MQ-135");
 MQUnifiedsensor MQ2(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin2, "MQ-2");
