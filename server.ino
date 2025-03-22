@@ -26,6 +26,17 @@ void get_MQ135(Request & req, Response & res) {
   res.print(response_json);
 }
 
+void get_MQ2(Request & req, Response & res) {
+  res.set("Content-Type", "application/json");
+
+  JsonDocument MQ2_Json = readALLMQ2();
+  String response_json;
+
+  serializeJson(MQ2_Json, response_json);
+
+  res.print(response_json);
+}
+
 void initServer() {
 
   WiFi.begin(ssid, password);
@@ -36,6 +47,7 @@ void initServer() {
   Serial.println(WiFi.localIP());
 
   app.get("/mq135", &get_MQ135);
+  app.get("/mq2", &get_MQ135);
 
   server.begin();
 }

@@ -11,6 +11,7 @@ float readAlcohol_MQ2();
 float readPropane();
 int rawMQ2();
 void calcR0_MQ2();
+JsonDocument readALLMQ2();
 float R0_MQ2 = 60; // Calculated from calibration routine
 
 

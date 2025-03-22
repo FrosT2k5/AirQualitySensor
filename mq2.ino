@@ -37,6 +37,21 @@ int rawMQ2() {
   return mq2Value;
 }
 
+JsonDocument readALLMQ2() {
+    JsonDocument doc;
+
+    MQ2.update();
+
+    doc["H2"] = readH2();
+    doc["LPG"] = readLPG();
+    doc["CO"] = readCO_MQ2();
+    doc["Alcohol"] = readAlcohol_MQ2();
+    doc["Butane"] = readPropane(); // Mark propane as butane
+    doc["Raw"] = rawMQ2();
+
+    return doc;
+}
+
 
 void calcR0_MQ2() {
     float calcR0_MQ2 = 0;
