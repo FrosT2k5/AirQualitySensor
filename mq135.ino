@@ -80,7 +80,8 @@ void calcR0_MQ135() {
         while (1);
     }
 
-    MQ135.setR0(calcR0/10);
+    R0_MQ135 = calcR0/10;
+    MQ135.setR0(R0_MQ135);
     Serial.println("Calibration done!");
     Serial.print("MQ135 R0: ");
     Serial.println(calcR0);

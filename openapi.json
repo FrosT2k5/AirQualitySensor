@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ESP32 Sensor API",
+    "version": "1.0.0",
+    "description": "API for reading sensor data, updating configurations, and calibrating sensors on ESP32"
+  },
+  "servers": [
+    {
+      "url": "http://192.168.1.9",
+      "description": "ESP32 Local Server"
+    }
+  ],
+  "paths": {
+    "/mq135": {
+      "get": {
+        "summary": "Get MQ135 sensor readings",
+        "operationId": "getMQ135",
+        "responses": {
+          "200": {
+            "description": "MQ135 sensor data",
+            "content": {
+              "application/json": {
+                "example": {
+                  "CO2": 400,
+                  "CO": 50,
+                  "Alcohol": 10
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mq2": {
+      "get": {
+        "summary": "Get MQ2 sensor readings",
+        "operationId": "getMQ2",
+        "responses": {
+          "200": {
+            "description": "MQ2 sensor data",
+            "content": {
+              "application/json": {
+                "example": {
+                  "H2": 100,
+                  "LPG": 200,
+                  "CO_MQ2": 30
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/buzzer": {
+      "get": {
+        "summary": "Get buzzer state and limits",
+        "operationId": "getBuzzer",
+        "responses": {
+          "200": {
+            "description": "Buzzer status and thresholds",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": 1,
+                  "MQ135_BUZZ_VALUE": 1500,
+                  "MQ2_BUZZ_VALUE": 1100
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update buzzer settings",
+        "operationId": "updateBuzzer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "state": "enable",
+                "MQ135_BUZZ_VALUE": 1500,
+                "MQ2_BUZZ_VALUE": 1100
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Buzzer state updated",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "state": 1,
+                  "MQ135_BUZZ_VALUE": 1500,
+                  "MQ2_BUZZ_VALUE": 1100
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dht": {
+      "get": {
+        "summary": "Get temperature and humidity",
+        "operationId": "getDHT",
+        "responses": {
+          "200": {
+            "description": "DHT sensor data",
+            "content": {
+              "application/json": {
+                "example": {
+                  "temperature": 25,
+                  "humidity": 60
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/config": {
+      "get": {
+        "summary": "Get configuration values",
+        "operationId": "getConfig",
+        "responses": {
+          "200": {
+            "description": "Configuration settings",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ENABLE_SERIAL_DEBUG": 1,
+                  "R0_MQ135": 1800.5,
+                  "R0_MQ2": 60.5
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update configuration settings",
+        "operationId": "updateConfig",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "ENABLE_SERIAL_DEBUG": "enable",
+                "R0_MQ135": 1800.5,
+                "R0_MQ2": 60.5
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuration updated",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "ENABLE_SERIAL_DEBUG": 1,
+                  "R0_MQ135": 1800.5,
+                  "R0_MQ2": 60.5
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calibrate": {
+      "get": {
+        "summary": "Run sensor calibration and save preferences",
+        "operationId": "calibrateSensors",
+        "responses": {
+          "200": {
+            "description": "Calibration completed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Calibration completed and preferences saved."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

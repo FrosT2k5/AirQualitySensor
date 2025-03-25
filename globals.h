@@ -6,6 +6,7 @@
 #include <MQUnifiedsensor.h>
 #include <LiquidCrystal_I2C.h>
 #include <DHT11.h>
+#include <Preferences.h>
 #include "secrets.h"
 
 // Board and Pin Definitions
@@ -37,6 +38,9 @@ int ENABLE_SERIAL_DEBUG = 0;
 MQUnifiedsensor MQ135(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, "MQ-135");
 MQUnifiedsensor MQ2(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin2, "MQ-2");
 DHT11 dht11(DhtPin);
+
+void save_preferences();
+void load_preferences();
 
 // WiFi Credentials
 // store these in file secrets.h

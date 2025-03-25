@@ -7,10 +7,55 @@
 unsigned long lastUpdate = 0;
 int displayIndex = 0;
 
+// Preferences Related Functions
+void save_preferences() {
+    Preferences preferences;
+    preferences.begin("sensor_config", false);  // Namespace: "sensor_config", RW mode
+
+    preferences.putInt("MQ135_BUZZ", MQ135_BUZZ_VALUE);
+    preferences.putInt("MQ2_BUZZ", MQ2_BUZZ_VALUE);
+    preferences.putInt("ENABLE_BUZZER", ENABLE_BUZZER);
+    preferences.putInt("SERIAL_DEBUG", ENABLE_SERIAL_DEBUG);
+    preferences.putFloat("R0_MQ135", R0_MQ135);
+    preferences.putFloat("R0_MQ2", R0_MQ2);
+
+    preferences.end();
+    Serial.println("Preferences saved!");
+}
+
+void load_preferences() {
+    Preferences preferences;
+    preferences.begin("sensor_config", true);  // Namespace: "sensor_config", Read-only mode
+
+    MQ135_BUZZ_VALUE = preferences.getInt("MQ135_BUZZ", MQ135_BUZZ_VALUE);
+    MQ2_BUZZ_VALUE = preferences.getInt("MQ2_BUZZ", MQ2_BUZZ_VALUE);
+    ENABLE_BUZZER = preferences.getInt("ENABLE_BUZZER", ENABLE_BUZZER);
+    ENABLE_SERIAL_DEBUG = preferences.getInt("SERIAL_DEBUG", ENABLE_SERIAL_DEBUG);
+    R0_MQ135 = preferences.getFloat("R0_MQ135", R0_MQ135);
+    R0_MQ2 = preferences.getFloat("R0_MQ2", R0_MQ2);
+    MQ135.setR0(R0_MQ135);
+    MQ2.setR0(R0_MQ2);
+    preferences.end();
+    
+    Serial.println("Preferences loaded:");
+    Serial.print("MQ135_BUZZ_VALUE: "); Serial.println(MQ135_BUZZ_VALUE);
+    Serial.print("MQ2_BUZZ_VALUE: "); Serial.println(MQ2_BUZZ_VALUE);
+    Serial.print("ENABLE_BUZZER: "); Serial.println(ENABLE_BUZZER);
+    Serial.print("ENABLE_SERIAL_DEBUG: "); Serial.println(ENABLE_SERIAL_DEBUG);
+    Serial.print("R0_MQ135: "); Serial.println(R0_MQ135);
+    Serial.print("R0_MQ2: "); Serial.println(R0_MQ2);
+}
+
+
+
+
 void setup() {
     Serial.begin(115200);
     lcd.init();
     lcd.backlight();
+
+    // Load preferences on boot
+    load_preferences();
 
     initMQ135();
     initMQ2();
@@ -20,8 +65,9 @@ void setup() {
     initServer();
 
     // Run calibration routines and update values
-    calcR0_MQ2();
-    calcR0_MQ135();
+    // calcR0_MQ2();
+    // calcR0_MQ135();
+    // Call the dedicated endpoint "/calibrate" now to calibrate when needed
 
     pinMode(BuzzPin, OUTPUT);
     Serial.println("** Values from MQ-135 & MQ-2 **");

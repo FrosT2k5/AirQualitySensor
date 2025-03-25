@@ -73,7 +73,8 @@ void calcR0_MQ2() {
         while (1);
     }
 
-    MQ2.setR0(calcR0_MQ2/10);
+    R0_MQ2 = calcR0_MQ2/10;
+    MQ2.setR0(R0_MQ2);
     Serial.print("MQ2 R0: ");
     Serial.println(calcR0_MQ2);
 
