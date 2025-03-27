@@ -212,6 +212,11 @@ void calibrate_sensors(Request & req, Response & res) {
     res.print(response_json);
 }
 
+void cors(Request &req, Response &res) {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "GET, POST"); // We only use get and post for now
+}
+
 void initServer() {
 
   WiFi.begin(ssid, password);
@@ -232,8 +237,9 @@ void initServer() {
   lcd.print(ipAddr);
   delay(2000);  // Display for 2 seconds
   
+  app.use(&cors);
   app.get("/mq135", &get_MQ135);
-  app.get("/mq2", &get_MQ135);
+  app.get("/mq2", &get_MQ2);
   app.post("/buzzer", &update_buzzer);
   app.get("/buzzer", &get_buzzer);
   app.get("/dht", &get_dht);
