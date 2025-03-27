@@ -1,13 +1,55 @@
 // Default values (Can be changed at runtime)
+let config: configType = {
+  samplingRate: 10000, // Default 5 seconds
+  apiHost: "http://192.168.1.9",
+};
+
 type configType = {
   samplingRate: number;
   apiHost: string;
 };
 
-let config: configType = {
-  samplingRate: 5000, // Default 5 seconds
-  apiHost: "http://192.168.1.9",
+// Type declarations
+type MQ135Data = {
+  CO2: number;
+  CO: number;
+  Alcohol: number;
+  Toluen?: number;
+  NH4?: number;
+  Aceton?: number;
+  Raw?: number;
 };
+
+type MQ2Data = {
+  H2?: number;
+  LPG: number;
+  CO: number;
+  Alcohol?: number;
+  Propane: number;
+  Raw?: number;
+};
+
+type DHT11Data = {
+  temperature: number;
+  humidity: number;
+};
+
+type FullSensorResponse = {
+  MQ135: MQ135Data,
+  MQ2: MQ2Data,
+  DHT11: DHT11Data,
+}
+
+export type SensorData = {
+  name: string; // Timestamp
+} & (MQ135Data | MQ2Data | DHT11Data);
+
+export type sensorDataStateType = {
+  MQ135: SensorData[];
+  MQ2: SensorData[];
+  DHT11: SensorData[];
+  rawData: FullSensorResponse;
+}
 
 // API Endpoints (Generated dynamically)
 const getEndpoints = () => ({
@@ -43,7 +85,12 @@ export const setSamplingRate = (rate: number) => {
   saveSettings();
 };
 
-export const fetchSensorData = async () => {
+export const fetchSensorData = async (): Promise<{
+  MQ135: MQ135Data;
+  MQ2: MQ2Data;
+  DHT11: DHT11Data;
+  fullResponse: FullSensorResponse;
+} | null> => {
   try {
     const endpoints = {
       MQ135: getEndpoints()["MQ135"],
@@ -72,8 +119,8 @@ export const fetchSensorData = async () => {
         Propane: mq2Res.Butane,
       },
       DHT11: {
-        Temperature: dht11Res.temperature,
-        Humidity: dht11Res.humidity,
+        temperature: dht11Res.temperature,
+        humidity: dht11Res.humidity,
       },
       fullResponse: { MQ135: mq135Res, MQ2: mq2Res, DHT11: dht11Res },
     };

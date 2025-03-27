@@ -8,7 +8,8 @@ import {
   Legend,
   Line,
 } from "recharts";
-import type { SensorData } from "./Dashboard";
+import type { SensorData } from "./helpers";
+
 
 type Props = {
   data: Array<SensorData>;
@@ -26,8 +27,8 @@ export default function DHT11Chart({ data }: Props) {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="Temperature" stroke="#ff7300" />
-        <Line type="monotone" dataKey="Humidity" stroke="#8884d8" />
+        <Line type="monotone" dataKey="temperature" stroke="#ff7300" />
+        <Line type="monotone" dataKey="humidity" stroke="#8884d8" />
       </LineChart>
     </ResponsiveContainer>
   );

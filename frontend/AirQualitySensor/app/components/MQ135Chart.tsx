@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getEndpoints, config } from "./helpers";
+import { getEndpoints, config, type SensorData } from "./helpers";
 import {
   CartesianGrid,
   Legend,
@@ -10,7 +10,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { SensorData } from "./Dashboard";
 
 
 type Props = {
