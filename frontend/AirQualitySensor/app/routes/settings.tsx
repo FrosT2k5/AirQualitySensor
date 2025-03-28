@@ -23,7 +23,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
   // Parse data from form
   let ipAddr = formData.get("ipAddr") as string;
-  let samplingRate = Math.max(10000, Number(formData.get("samplingRate"))); // Ensure minimum 10,000
+  let samplingRate = Math.max(5000, Number(formData.get("samplingRate"))); // Ensure minimum 5,000
   let enableBuzzer = formData.get("enableBuzzer") as string;
   let MQ135_BUZZ_VALUE = Number(formData.get("MQ135_BUZZ_VALUE"));
   let MQ2_BUZZ_VALUE = Number(formData.get("MQ2_BUZZ_VALUE"));
