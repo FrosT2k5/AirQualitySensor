@@ -1,17 +1,17 @@
 "use client";
 
 import { Box, Container, Grid, GridItem, Heading, Text } from '@chakra-ui/react'
-import { useState, type ReactNode, useEffect } from 'react';
+import {  useEffect } from 'react';
 import MQ135Chart from './MQ135Chart';
-import type { JSX } from 'react/jsx-runtime';
-import { config, fetchSensorData, type sensorDataStateType } from './helpers';
+import { config, sensorData} from './helpers';
 import MQ2Chart from './MQ2Chart';
 import DHT11Chart from './DHTChart';
+import { useRevalidator } from 'react-router';
+import { useConnection } from './ui/ConnectionContext';
 
 type Props = {
   children?: React.ReactNode,
 }
-
 
 function ChartBox({children}: Props ) {
   return <Box h="440px" p="0" border="solid 1px" borderRadius="15px" borderColor="InactiveBorder" shadow="lg">
@@ -20,33 +20,19 @@ function ChartBox({children}: Props ) {
 }
 
 function Dashboard({}: Props) {
-  const [sensorData, setSensorData] = useState<sensorDataStateType>({
-    MQ135: [],
-    MQ2: [],
-    DHT11: [],
-    rawData: {
-      MQ135: { CO2: 0, CO: 0, Alcohol: 0},
-      MQ2: { LPG: 0, Propane: 0, CO: 0},
-      DHT11: { temperature: 0, humidity: 0},
-    },
-  });
+  const revalidator = useRevalidator();
+  const { setConnectionState } = useConnection();
 
+  // Update connection state, shown in navbar
+  setConnectionState(sensorData.isOnline);
+  
   useEffect(() => {
     const updateData = async () => {
-      const data = await fetchSensorData();
-      console.log(data);
-      if (data) {
-        setSensorData((prevData) => ({
-          MQ135: [...prevData.MQ135.slice(-14), { name: new Date().toLocaleTimeString(), ...data.MQ135 }],
-          MQ2: [...prevData.MQ2.slice(-14), { name: new Date().toLocaleTimeString(), ...data.MQ2 }],
-          DHT11: [...prevData.DHT11.slice(-14), { name: new Date().toLocaleTimeString(), ...data.DHT11 }],
-          rawData: data.fullResponse,
-        }));
-      }
+      revalidator.revalidate();
     };
   
     updateData(); // Fetch once on mount
-    const interval = setInterval(updateData, config.samplingRate); // Update every 5 sec
+    const interval = setInterval(updateData, config.samplingRate);
   
     return () => clearInterval(interval); // Cleanup function
   }, [config.samplingRate]);
@@ -58,21 +44,21 @@ function Dashboard({}: Props) {
 
         <GridItem colSpan={2}>
           <ChartBox> 
-            <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> MQ135 Readings: </Text>
+            <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> MQ135 Readings (PPM): </Text>
             <MQ135Chart data={sensorData["MQ135"]}/>
           </ChartBox>
         </GridItem>
 
         <GridItem colSpan={2}>
           <ChartBox> 
-          <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> MQ2 Readings: </Text>
+          <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> MQ2 Readings (PPM): </Text>
             <MQ2Chart data={sensorData["MQ2"]}/>
           </ChartBox>
         </GridItem>
 
         <GridItem colSpan={2}>
         <ChartBox> 
-        <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> DHT11 Readings: </Text>
+        <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> DHT11 Readings (°C/%): </Text>
             <DHT11Chart data={sensorData["DHT11"]}/>
           </ChartBox>
         </GridItem>

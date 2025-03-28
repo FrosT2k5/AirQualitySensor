@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { getEndpoints, config, type SensorData } from "./helpers";
+import { type SensorData } from "./helpers";
 import {
   CartesianGrid,
   Legend,

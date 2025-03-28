@@ -4,6 +4,24 @@ let config: configType = {
   apiHost: "http://192.168.1.9",
 };
 
+export enum onlineState {
+  loading = "Loading",
+  online = "Online",
+  offline = "Offline" 
+}
+
+export let sensorData: sensorDataStateType = {
+  MQ135: [],
+  MQ2: [],
+  DHT11: [],
+  rawData: {
+    MQ135: { CO2: 0, CO: 0, Alcohol: 0},
+    MQ2: { LPG: 0, Propane: 0, CO: 0},
+    DHT11: { temperature: 0, humidity: 0},
+  },
+  isOnline: onlineState.loading,
+}
+
 type configType = {
   samplingRate: number;
   apiHost: string;
@@ -49,6 +67,7 @@ export type sensorDataStateType = {
   MQ2: SensorData[];
   DHT11: SensorData[];
   rawData: FullSensorResponse;
+  isOnline: onlineState
 }
 
 // API Endpoints (Generated dynamically)

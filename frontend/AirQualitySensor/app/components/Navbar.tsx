@@ -14,11 +14,15 @@ import {
   Stack,
   ClientOnly,
   Skeleton,
+  Spinner,
 } from "@chakra-ui/react";
 
-import { FiMenu } from "react-icons/fi";
+import { FiCheck, FiCheckCircle, FiMenu, FiXCircle } from "react-icons/fi";
 import { NavLink } from "react-router"; // Ensure correct import
-import { useColorModeValue, ColorModeButton, useColorMode } from "./ui/color-mode";
+import { useColorModeValue, ColorModeButton } from "./ui/color-mode";
+import { useConnection } from "./ui/ConnectionContext";
+import { onlineState } from "./helpers";
+import { Tooltip } from "./ui/tooltip";
 
 const LinkItems = [
   { name: "Dashboard", to: "/" },
@@ -36,6 +40,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   const borderColor = useColorModeValue("gray.300", "#222222");
   const textColor = useColorModeValue("black", "white");
   const hoverBg = useColorModeValue("gray.400", "#111111");
+  const { connectionState } = useConnection();
 
   return (
     <ClientOnly fallback={<Skeleton boxSize="8" />}>
@@ -51,8 +56,17 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       >
         <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
           <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-            Logo
+            AirQuality
           </Text>
+          <Box as="div" ml="8" display={{ base: "none", md: "inline" }}>
+            <Tooltip content={`Connection Status: ${connectionState}`}>
+              <span>
+                {(connectionState == onlineState.loading && <Spinner size="lg" />)}
+                {(connectionState == onlineState.online && <FiCheckCircle size="2em" />)}
+                {(connectionState == onlineState.offline && <FiXCircle size="2em" />)}
+              </span>
+            </Tooltip>
+          </Box>
           <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
         </Flex>
 
@@ -97,6 +111,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const bgColor = useColorModeValue("gray.100", "#000000");
   const borderColor = useColorModeValue("gray.300", "#222222");
   const textColor = useColorModeValue("black", "white");
+  const { connectionState } = useConnection();
 
   return (
     <ClientOnly fallback={<Skeleton boxSize="8" />}>
@@ -122,8 +137,13 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         </IconButton>
 
         <Text fontSize="2xl" ml="8" fontFamily="monospace" fontWeight="bold" display={"inline"} textAlign="center">
-          Logo
+        AirQuality
         </Text>
+        <Box ml="8">
+        {(connectionState == onlineState.loading && <Spinner size="lg" />)}
+            {(connectionState == onlineState.online && <FiCheckCircle size="2em" />)}
+            {(connectionState == onlineState.offline && <FiXCircle size="2em" />)}
+        </Box>
       </Flex>
     </ClientOnly>
   );
