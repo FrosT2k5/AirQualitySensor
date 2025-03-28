@@ -3,7 +3,7 @@
 import { Box, Container, Grid, GridItem, Heading, Text } from '@chakra-ui/react'
 import {  useEffect } from 'react';
 import MQ135Chart from './MQ135Chart';
-import { config, sensorData} from './helpers';
+import { config, sensorData} from '../helpers';
 import MQ2Chart from './MQ2Chart';
 import DHT11Chart from './DHTChart';
 import { useRevalidator } from 'react-router';

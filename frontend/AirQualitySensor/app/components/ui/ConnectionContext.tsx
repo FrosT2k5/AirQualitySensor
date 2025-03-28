@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { onlineState } from "../helpers";
+import { onlineState } from "../../helpers";
 
 type ConnectionContextType = {
   connectionState: onlineState;

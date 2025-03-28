@@ -21,7 +21,7 @@ import { FiCheck, FiCheckCircle, FiMenu, FiXCircle } from "react-icons/fi";
 import { NavLink } from "react-router"; // Ensure correct import
 import { useColorModeValue, ColorModeButton } from "./ui/color-mode";
 import { useConnection } from "./ui/ConnectionContext";
-import { onlineState } from "./helpers";
+import { onlineState } from "../helpers";
 import { Tooltip } from "./ui/tooltip";
 
 const LinkItems = [
@@ -93,7 +93,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
               _hover={{ bg: hoverBg, color: textColor }}
             />
           ))}
-          <Text px="4" py="2"> 
+          <Text as="div" px="4" py="2"> 
             Theme: <ColorModeButton variant="ghost" />
           </Text>
           

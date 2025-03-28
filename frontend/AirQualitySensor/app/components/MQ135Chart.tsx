@@ -1,4 +1,4 @@
-import { type SensorData } from "./helpers";
+import { type SensorData } from "../helpers";
 import {
   CartesianGrid,
   Legend,

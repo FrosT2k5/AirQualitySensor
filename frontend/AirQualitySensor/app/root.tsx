@@ -14,6 +14,7 @@ import "./app.css";
 import Navbar from "./components/Navbar";
 import { Box, Skeleton } from "@chakra-ui/react";
 import { ConnectionProvider } from "./components/ui/ConnectionContext";
+import { loadSettings, saveSettings } from "./helpers";
 
 export const links: Route.LinksFunction = () => [
   // { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -34,7 +35,6 @@ export function HydrateFallback() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-
   return (
     <html lang="en">
       <head>
@@ -62,6 +62,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  loadSettings(); // Load settings
+  saveSettings(); // Save for first load
   return <Outlet />;
 }
 

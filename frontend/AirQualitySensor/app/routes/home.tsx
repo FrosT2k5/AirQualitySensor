@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchSensorData, sensorData, onlineState } from "~/components/helpers";
+import { fetchSensorData, sensorData, onlineState } from "~/helpers";
 import type { Route } from "./+types/home";
 import Dashboard from "~/components/Dashboard";
 
@@ -25,7 +25,6 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   } else {
     sensorData.isOnline = onlineState.offline;
   }
-  console.log(sensorData);
 }
 
 export function meta({}: Route.MetaArgs) {

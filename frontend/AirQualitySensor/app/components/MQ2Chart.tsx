@@ -8,7 +8,7 @@ import {
   Legend,
   Line,
 } from "recharts";
-import type { SensorData } from "./helpers";
+import type { SensorData } from "../helpers";
 
 type Props = {
   data: Array<SensorData>;
