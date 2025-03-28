@@ -214,7 +214,12 @@ void calibrate_sensors(Request & req, Response & res) {
 
 void cors(Request &req, Response &res) {
   res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET, POST"); // We only use get and post for now
+  res.set("Access-Control-Allow-Methods", "*");
+  res.set("Access-Control-Allow-Headers", "*");
+}
+
+void handle_preflight(Request &req, Response &res) {
+  res.sendStatus(204);
 }
 
 void initServer() {
@@ -238,6 +243,7 @@ void initServer() {
   delay(2000);  // Display for 2 seconds
   
   app.use(&cors);
+  app.options(&handle_preflight);
   app.get("/mq135", &get_MQ135);
   app.get("/mq2", &get_MQ2);
   app.post("/buzzer", &update_buzzer);
