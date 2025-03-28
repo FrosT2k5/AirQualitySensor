@@ -2,12 +2,13 @@
 #define GLOBALS_H
 
 #include <ArduinoJson.h> 
-#include <WiFi.h>
 #include <MQUnifiedsensor.h>
 #include <LiquidCrystal_I2C.h>
 #include <DHT11.h>
 #include <Preferences.h>
 #include "secrets.h"
+#include <WiFi.h>
+#include <WiFiManager.h>
 
 // Board and Pin Definitions
 #define Board "ESP-32"
@@ -21,9 +22,12 @@
 #define ADC_Bit_Resolution 12
 
 // Display Configurations
-#define DISPLAY_INTERVAL 880  // LCD update interval, add 200 of sampling freq
+#define DISPLAY_INTERVAL 1200  // LCD update interval
 int lcdColumns = 16;
 int lcdRows = 2;
+
+// WiFi Manager
+WiFiManager wifiManager;
 
 // LCD Object
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
@@ -38,6 +42,8 @@ int ENABLE_SERIAL_DEBUG = 0;
 MQUnifiedsensor MQ135(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, "MQ-135");
 MQUnifiedsensor MQ2(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin2, "MQ-2");
 DHT11 dht11(DhtPin);
+volatile int lastTemperature = 0;
+volatile int lastHumidity = 0;
 
 void save_preferences();
 void load_preferences();

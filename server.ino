@@ -224,11 +224,9 @@ void handle_preflight(Request &req, Response &res) {
 
 void initServer() {
 
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
+  wifiManager.autoConnect(ssid, password);
+  
+  // Getting here means WiFi has been connected
   Serial.println(WiFi.localIP());
 
   // Get IP Address

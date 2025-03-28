@@ -3,6 +3,7 @@
 #include "mq2.h"
 #include "dht11.h"
 #include "server.h"
+#include "esp_task_wdt.h"
 
 TaskHandle_t Task1_Handle;
 TaskHandle_t Task2_Handle;
@@ -138,12 +139,29 @@ void Task1_Core1(void *pvParameters) {
 
 // Task for Core 0 (WiFi & Server)
 void Task2_Core0(void *pvParameters) {
+  while (true) {
+    WiFiClient client = server.available();
+    if (client.connected()) {
+        app.process(&client);
+    }
+    vTaskDelay( 500 / portTICK_PERIOD_MS);  
+  }
+}
+
+// Read DHT 2 seconds, since dht has freq of 1hz (1s) and breaks when read concurrently
+void Task_DHTReader(void *pvParameters) {
     while (true) {
-        WiFiClient client = server.available();
-        if (client.connected()) {
-            app.process(&client);
+        int temp, hum;
+        int result = dht11.readTemperatureHumidity(temp, hum);
+
+        if (result == 0) {  // Valid reading
+            lastTemperature = temp;
+            lastHumidity = hum;
+        } else {
+            Serial.println(DHT11::getErrorString(result));
         }
-        delay(100);
+
+        vTaskDelay(4000 / portTICK_PERIOD_MS);  
     }
 }
 
@@ -158,26 +176,19 @@ void setup() {
     initMQ2();
     initDHT();
 
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    String ipAddr = WiFi.localIP().toString();
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("IP Address:");
-    lcd.setCursor(0, 1);
-    lcd.print(ipAddr);
-    delay(2000);
-    Serial.println(ipAddr);
-
     initServer();
     pinMode(BuzzPin, OUTPUT);
     Serial.println("** Values from MQ-135 & MQ-2 **");
 
-    xTaskCreatePinnedToCore(Task1_Core1, "Task1", 10000, NULL, 1, &Task1_Handle, 1);
-    xTaskCreatePinnedToCore(Task2_Core0, "Task2", 10000, NULL, 1, &Task2_Handle, 0);
+    esp_task_wdt_config_t config = {
+        .timeout_ms = 15 * 1000, // 10 seconds
+        .idle_core_mask = (1 << CONFIG_FREERTOS_NUMBER_OF_CORES) - 1,
+        .trigger_panic = true,
+    };
+    esp_task_wdt_reconfigure(&config);
+    xTaskCreatePinnedToCore(Task1_Core1, "Task1", 10000, NULL, 1, &Task1_Handle, 1); // Core 1
+    xTaskCreatePinnedToCore(Task_DHTReader, "DHTReader", 4000, NULL, 2, NULL, 1);  // Core 1
+    xTaskCreatePinnedToCore(Task2_Core0, "Task2", 10000, NULL, 1, &Task2_Handle, 0); // Core 0
 }
 
 void loop() {
