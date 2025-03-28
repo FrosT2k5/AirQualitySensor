@@ -28,7 +28,7 @@ type Props = {
 function SettingsBox({ children, h }: Props) {
   return (
     <Box
-      h={h}
+      minH={h}
       p="8"
       border="solid 1px"
       borderRadius="15px"
