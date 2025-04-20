@@ -150,18 +150,20 @@ void Task2_Core0(void *pvParameters) {
 
 // Read DHT 2 seconds, since dht has freq of 1hz (1s) and breaks when read concurrently
 void Task_DHTReader(void *pvParameters) {
-    while (true) {
-        int temp, hum;
-        int result = dht11.readTemperatureHumidity(temp, hum);
+    dht.begin(); 
 
-        if (result == 0) {  // Valid reading
+    while (true) {
+        float temp = dht.readTemperature();
+        float hum = dht.readHumidity();
+
+        if (isnan(temp) || isnan(hum)) {
+            Serial.println("❌ Failed to read from DHT sensor!");
+        } else {
             lastTemperature = temp;
             lastHumidity = hum;
-        } else {
-            Serial.println(DHT11::getErrorString(result));
         }
 
-        vTaskDelay(4000 / portTICK_PERIOD_MS);  
+        vTaskDelay(4000 / portTICK_PERIOD_MS);  // 4 seconds
     }
 }
 

@@ -4,7 +4,7 @@
 #include <ArduinoJson.h> 
 #include <MQUnifiedsensor.h>
 #include <LiquidCrystal_I2C.h>
-#include <DHT11.h>
+#include <DHT.h>
 #include <Preferences.h>
 #include "secrets.h"
 #include <WiFi.h>
@@ -15,7 +15,8 @@
 #define Pin 34       // MQ135 Sensor Pin
 #define Pin2 35      // MQ2 Sensor Pin
 #define BuzzPin 23   // Buzzer Pin
-#define DhtPin 32    // DHT11 Sensor Pin
+#define DhtPin 19 // DHT11 Sensor Pin
+#define DHTTYPE DHT11
 
 // ADC Configuration
 #define Voltage_Resolution 3.3
@@ -41,7 +42,7 @@ int ENABLE_SERIAL_DEBUG = 0;
 // Sensor Objects
 MQUnifiedsensor MQ135(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, "MQ-135");
 MQUnifiedsensor MQ2(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin2, "MQ-2");
-DHT11 dht11(DhtPin);
+DHT dht(DhtPin, DHTTYPE);
 volatile int lastTemperature = 0;
 volatile int lastHumidity = 0;
 
