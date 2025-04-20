@@ -17,17 +17,18 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 
-import { FiCheck, FiCheckCircle, FiMenu, FiXCircle } from "react-icons/fi";
+import { FiCheckCircle, FiHome, FiMenu, FiSettings, FiXCircle } from "react-icons/fi";
 import { NavLink } from "react-router"; // Ensure correct import
 import { useColorModeValue, ColorModeButton } from "./ui/color-mode";
 import { useConnection } from "./ui/ConnectionContext";
-import { onlineState } from "../helpers";
+import { onlineState, sensorData } from "../helpers";
 import { Tooltip } from "./ui/tooltip";
+import { FaFireAlt } from "react-icons/fa";
 
 const LinkItems = [
-  { name: "Dashboard", to: "/" },
-  { name: "Settings", to: "/settings" },
-  { name: "About", to: "/about" },
+  { name: "Dashboard", to: "/", Icon: FiHome},
+  { name: "Settings", to: "/settings", Icon: FiSettings },
+  { name: "About", to: "/about", Icon: FaFireAlt},
 ];
 
 interface SidebarProps {
@@ -37,7 +38,7 @@ interface SidebarProps {
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   const bgColor = useColorModeValue("gray.300", "#000000");
-  const borderColor = useColorModeValue("gray.300", "#222222");
+  const borderColor = useColorModeValue("black", "#222222");
   const textColor = useColorModeValue("black", "white");
   const hoverBg = useColorModeValue("gray.400", "#111111");
   const { connectionState } = useConnection();
@@ -47,7 +48,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       <Box
         bg={bgColor}
         color={textColor}
-        borderRight="1px"
+        borderRight="solid 1px"
         borderRightColor={borderColor}
         w={{ base: "full", md: 72 }}
         pos="fixed"
@@ -83,7 +84,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                     fontWeight: "bolder",
                     border: "solid",
                     borderRadius: "12px",
-                  } : {}}>
+                  } : {}}
+                > <link.Icon />
                   {link.name}
                 </NavLink>
               )}

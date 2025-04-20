@@ -1,9 +1,9 @@
 "use client";
 
-import { Box, Container, Grid, GridItem, Heading, Text } from '@chakra-ui/react'
+import { Box, Container, Grid, GridItem, Heading, Skeleton, SkeletonText, Text } from '@chakra-ui/react'
 import {  useEffect } from 'react';
 import MQ135Chart from './MQ135Chart';
-import { config, sensorData} from '../helpers';
+import { config, sensorData, type sensorDataStateType} from '../helpers';
 import MQ2Chart from './MQ2Chart';
 import DHT11Chart from './DHTChart';
 import { useRevalidator } from 'react-router';
@@ -11,6 +11,7 @@ import { useConnection } from './ui/ConnectionContext';
 
 type Props = {
   children?: React.ReactNode,
+  preloadedSensorData?: sensorDataStateType,
 }
 
 function ChartBox({children}: Props ) {
@@ -18,6 +19,54 @@ function ChartBox({children}: Props ) {
     {children}
   </Box>
 }
+
+export function DashboardSkeleton() {
+  return (
+    <Container mt="4">
+      <Heading textStyle="3xl" fontWeight="bold" mb="5">
+        <Skeleton height="32px" width="200px" />
+      </Heading>
+      
+      <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(4, 1fr)" }} gap="6">
+        
+        {/* MQ135 Skeleton */}
+        <GridItem colSpan={2}>
+          <ChartBox>
+            <SkeletonText noOfLines={1} m="4" h="20px" textAlign="center" mt="2" mb="2" />
+            <Skeleton height="350px" />
+          </ChartBox>
+        </GridItem>
+
+        {/* MQ2 Skeleton */}
+        <GridItem colSpan={2}>
+          <ChartBox>
+            <SkeletonText noOfLines={1} m="4" h="20px" textAlign="center" mt="2" mb="2" />
+            <Skeleton height="350px" />
+          </ChartBox>
+        </GridItem>
+
+        {/* DHT11 Skeleton */}
+        <GridItem colSpan={2}>
+          <ChartBox>
+            <SkeletonText noOfLines={1} m="4" h="20px" textAlign="center" mt="2" mb="2" />
+            <Skeleton height="350px" />
+          </ChartBox>
+        </GridItem>
+
+        {/* Raw Data Skeleton */}
+        <GridItem colSpan={2}>
+          <ChartBox>
+            <Box p="7">
+              <SkeletonText noOfLines={6} m="4" h="20px" />
+            </Box>
+          </ChartBox>
+        </GridItem>
+
+      </Grid>
+    </Container>
+  );
+}
+
 
 function Dashboard({}: Props) {
   const revalidator = useRevalidator();

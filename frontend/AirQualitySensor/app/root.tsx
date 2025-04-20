@@ -12,9 +12,10 @@ import { Provider } from "./components/ui/provider"
 import type { Route } from "./+types/root";
 import "./app.css";
 import Navbar from "./components/Navbar";
-import { Box, Skeleton } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { ConnectionProvider } from "./components/ui/ConnectionContext";
 import { loadSettings, saveSettings } from "./helpers";
+import { DashboardSkeleton } from "./components/Dashboard";
 
 export const links: Route.LinksFunction = () => [
   // { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -30,8 +31,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function HydrateFallback() {
-  return <Skeleton h="440px" p="0" border="solid 1px" borderRadius="15px" borderColor="InactiveBorder" shadow="lg">
-</Skeleton>
+  return <DashboardSkeleton />
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -1,5 +1,6 @@
 "use client";
 
+import AboutUs from "~/components/AboutUs";
 import type { Route } from "./+types/about";
 
 export function meta({}: Route.MetaArgs) {
@@ -10,5 +11,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function About() {
-  return <div>About Page</div>;
+  return <AboutUs />;
 }

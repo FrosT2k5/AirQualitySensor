@@ -9,12 +9,15 @@ import {
   Heading,
   HStack,
   Input,
+  Skeleton,
+  SkeletonText,
   Slider,
+  Spinner,
   Stack,
   Switch,
   Text,
 } from "@chakra-ui/react";
-import { Form, useRevalidator } from "react-router";
+import { Form, useFetcher, useRevalidator } from "react-router";
 import { calibrateRequest, config, onlineState, type BuzzerConfigResponse } from "../helpers";
 import { useState } from "react";
 import { useConnection } from "./ui/ConnectionContext";
@@ -40,21 +43,82 @@ function SettingsBox({ children, h }: Props) {
   );
 }
 
-/* 
-ip addr
-Buzzer switch, 
-buzzer values,
-update rate (slider),
-serial debug switch
-caliration values for mq135 and mq2
-calibrate button
-*/
+export function SettingsSkeleton() {
+  return (
+    <Container mt="4">
+      <Heading textStyle="3xl" fontWeight="bold" mb="5">
+        <Skeleton h="40px" w="200px" />
+      </Heading>
+
+      <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(4, 1fr)" }} gap="6">
+        
+        {/* Configuration Form Skeleton */}
+        <GridItem colSpan={2}>
+          <SettingsBox h="700px">
+            <SkeletonText h="20px" mb="4" />
+            
+            <Skeleton h="40px" w="100%" mb="3" /> {/* IP Address Input */}
+            
+            <Stack direction="row" justifyContent="space-between">
+              <Skeleton h="20px" w="150px" />
+              <Skeleton h="30px" w="50px" />
+            </Stack>
+
+            <Skeleton h="40px" w="100%" mt="3" /> {/* MQ135 Input */}
+            <Skeleton h="40px" w="100%" mt="3" /> {/* MQ2 Input */}
+
+            <Stack direction="row" justifyContent="space-between" mt="3">
+              <Skeleton h="20px" w="200px" />
+              <Skeleton h="30px" w="50px" />
+            </Stack>
+
+            <Skeleton h="40px" w="100%" mt="3" /> {/* R0 MQ135 */}
+            <Skeleton h="40px" w="100%" mt="3" /> {/* R0 MQ2 */}
+            <Skeleton h="40px" w="100%" mt="3" /> {/* Graph Update Interval */}
+
+            <Stack mx="20">
+              <Skeleton h="50px" w="150px" mt="8" /> {/* Submit Button */}
+            </Stack>
+          </SettingsBox>
+        </GridItem>
+
+        {/* Configuration Details Skeleton */}
+        <GridItem colSpan={2}>
+          <SettingsBox h="500px">
+            <Box p="7">
+              <Skeleton h="30px" w="250px" mb="4" />
+              
+              <Skeleton h="20px" w="200px" mb="2" />
+              <Skeleton h="20px" w="250px" mb="2" />
+              <Skeleton h="20px" w="300px" mb="2" />
+              <Skeleton h="20px" w="250px" mb="2" />
+              <Skeleton h="20px" w="300px" mb="2" />
+              <Skeleton h="20px" w="250px" mb="2" />
+              <Skeleton h="20px" w="300px" mb="2" />
+              <Skeleton h="20px" w="200px" mb="2" />
+              
+              <Skeleton h="20px" w="250px" mt="2" />
+              <Skeleton h="50px" w="180px" mt="3" /> {/* Calibrate Button */}
+            </Box>
+          </SettingsBox>
+        </GridItem>
+
+      </Grid>
+    </Container>
+  );
+}
 
 export function SettingsPage({ loaderData }: Props) {
   let initialBuzz = false;
   let initialDebug = false;
+  
   const { setConnectionState } = useConnection();
   let { revalidate } = useRevalidator();
+  let fetcher = useFetcher();
+  let [ calibratorBusy, setCalibratorBusy ] = useState(false);
+
+  let busy = fetcher.state !== "idle";
+
   if (loaderData?.buzzer.status) initialBuzz = true;
   if (loaderData?.config.ENABLE_SERIAL_DEBUG) initialBuzz = true;
 
@@ -66,10 +130,13 @@ export function SettingsPage({ loaderData }: Props) {
   const [interval, setInterval] = useState([config.samplingRate / 1000]);
 
   async function calibrateSensors() {
-    const resp = await calibrateRequest();
+    setCalibratorBusy(true); // Mark the form as busy
+    await calibrateRequest();
+    setCalibratorBusy(false);
     // reload data after calibrating
     revalidate();
   }
+
   return (
     <Container mt="4">
       <Heading textStyle="3xl" fontWeight="bold" mb="5">
@@ -85,7 +152,7 @@ export function SettingsPage({ loaderData }: Props) {
               Configuration:
             </Text>
 
-            <Form method="post">
+            <fetcher.Form method="post" action="/settings">
               <Text fontWeight="bold" fontSize="md">
                 IP Address of ESP32:
               </Text>
@@ -197,12 +264,11 @@ export function SettingsPage({ loaderData }: Props) {
               </Slider.Root>
 
               <Stack mx="20">
-                <Button type="submit" mt="8">
-                  {" "}
-                  Submit{" "}
+                <Button type="submit" mt="8" disabled={calibratorBusy || busy}>
+                  {busy ? <> Submitting... <Spinner /> </>  : "Submit"}
                 </Button>
               </Stack>
-            </Form>
+            </fetcher.Form>
           </SettingsBox>
         </GridItem>
 
@@ -222,7 +288,9 @@ export function SettingsPage({ loaderData }: Props) {
               <Text fontSize="xl"> R0 MQ2: {loaderData?.config.R0_MQ2} </Text>
               <Text fontSize="xl"> Update Rate: {config.samplingRate / 1000} s</Text>
               <Text fontSize="xl" mt="2"> Press the button below to calibrate sensors: </Text>
-              <Button onClick={calibrateSensors}> Calibrate Sensors </Button>
+              <Button onClick={() => calibrateSensors()} disabled={calibratorBusy || busy}>
+                {calibratorBusy ? <> Calibrating... <Spinner /> </>  : "Calibrate"}  
+              </Button>
             </Box>
           </SettingsBox>
         </GridItem>

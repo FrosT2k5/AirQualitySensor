@@ -2,8 +2,10 @@
 
 import { config, fetchBuzzerAndConfig, postBuzzerData, postConfigData, saveSettings } from "~/helpers";
 import type { Route } from "./+types/settings";
-import { SettingsPage } from "~/components/SettingsPage";
+import { SettingsPage, SettingsSkeleton } from "~/components/SettingsPage";
 import { } from "../helpers";
+import React from "react";
+import { Await } from "react-router";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "AirQualitySensor: Settings" },
@@ -14,8 +16,8 @@ export function meta({}: Route.MetaArgs) {
 export async function clientLoader({
   params,
 }: Route.ClientLoaderArgs) {
-  const response = await fetchBuzzerAndConfig();
-  return response;
+  const responsePromise = fetchBuzzerAndConfig();
+  return { responsePromise };
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
@@ -44,7 +46,14 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 export default function Settings({
   loaderData,
 }: Route.ComponentProps) {
+
+  const { responsePromise } = loaderData;
+
   return (
-    <SettingsPage loaderData={loaderData}/>
+    <React.Suspense fallback={<SettingsSkeleton />}>
+    <Await resolve={responsePromise}>
+      {(value) => (<SettingsPage loaderData={value} />)}
+    </Await>
+  </React.Suspense>
   );
 }
