@@ -3,7 +3,7 @@
 import { Box, Container, Grid, GridItem, Heading, Skeleton, SkeletonText, Text } from '@chakra-ui/react'
 import {  useEffect } from 'react';
 import MQ135Chart from './MQ135Chart';
-import { config, sensorData, type sensorDataStateType} from '../helpers';
+import { config, loadSettings, sensorData, type sensorDataStateType} from '../helpers';
 import MQ2Chart from './MQ2Chart';
 import DHT11Chart from './DHTChart';
 import { useRevalidator } from 'react-router';
@@ -21,6 +21,8 @@ function ChartBox({children}: Props ) {
 }
 
 export function DashboardSkeleton() {
+  loadSettings();
+  
   return (
     <Container mt="4">
       <Heading textStyle="3xl" fontWeight="bold" mb="5">
