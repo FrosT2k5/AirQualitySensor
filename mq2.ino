@@ -4,7 +4,7 @@
 void initMQ2() {
     MQ2.setRegressionMethod(1);
     MQ2.init();
-    MQ2.setR0(R0_MQ2/10);
+    MQ2.setR0(R0_MQ2);
 }
 
 float readH2() {

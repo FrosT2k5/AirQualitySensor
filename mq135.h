@@ -13,6 +13,6 @@ float readAceton();
 int rawMQ135();
 void calcR0_MQ135();
 JsonDocument readALLMQ135();
-float R0_MQ135 = 180; // Calculated from calibration routine
+float R0_MQ135 = 2; // Calculated from calibration routine
 
 #endif

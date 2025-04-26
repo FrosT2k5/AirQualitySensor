@@ -4,7 +4,7 @@
 void initMQ135() {
     MQ135.setRegressionMethod(1);
     MQ135.init();
-    MQ135.setR0(R0_MQ135/10);
+    MQ135.setR0(R0_MQ135);
 }
 
 float readCO() {
