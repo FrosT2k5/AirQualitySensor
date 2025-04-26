@@ -21,7 +21,6 @@ function ChartBox({children}: Props ) {
 }
 
 export function DashboardSkeleton() {
-  loadSettings();
   
   return (
     <Container mt="4">

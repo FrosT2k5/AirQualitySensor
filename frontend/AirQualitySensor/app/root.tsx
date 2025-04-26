@@ -16,6 +16,7 @@ import { Box } from "@chakra-ui/react";
 import { ConnectionProvider } from "./components/ui/ConnectionContext";
 import { loadSettings, saveSettings } from "./helpers";
 import { DashboardSkeleton } from "./components/Dashboard";
+import { useEffect } from "react";
 
 export const links: Route.LinksFunction = () => [
   // { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -62,8 +63,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  loadSettings(); // Load settings
-  saveSettings(); // Save for first load
+  useEffect( () => {
+      loadSettings();
+      saveSettings();
+    }, []
+  )
   return <Outlet />;
 }
 
