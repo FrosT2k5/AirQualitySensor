@@ -3,7 +3,8 @@
 // Default values (Can be changed at runtime)
 let initialConfig: configType = {
   samplingRate: 10000, // Default 5 seconds
-  apiHost: "192.168.1.9",
+  apiHost: "192.168.106.182",
+  internetMode: true, // default to internet mode
 };
 
 let config: configType = initialConfig;
@@ -44,6 +45,7 @@ export let sensorData: sensorDataStateType = {
 type configType = {
   samplingRate: number;
   apiHost: string;
+  internetMode: boolean;
 };
 
 // Type declarations
@@ -106,7 +108,14 @@ export type ConfigData = {
 export type BuzzerConfigResponse = {
   buzzer: BuzzerData;
   config: ConfigData;
+  internetMode: boolean;
 };
+
+export type InternetConfigResponse = {
+  internetMode: boolean;
+  buzzer: null;
+  config: null;
+}
 
 // API Endpoints (Generated dynamically)
 const getEndpoints = () => ({
@@ -175,8 +184,15 @@ export const fetchSensorData = async (): Promise<{
   }
 };
 
-export const fetchBuzzerAndConfig = async (): Promise<BuzzerConfigResponse | null> => {
+export const fetchBuzzerAndConfig = async (): Promise<BuzzerConfigResponse | InternetConfigResponse | null> => {
   try {
+    if (config.internetMode) {
+      return {
+        internetMode: true,
+        buzzer: null,
+        config: null,
+      }
+    }
     const buzzerRes = await fetch(getEndpoints()["BUZZER"]);
     const buzzerData: BuzzerData = await buzzerRes.json();
 
@@ -186,6 +202,7 @@ export const fetchBuzzerAndConfig = async (): Promise<BuzzerConfigResponse | nul
     return {
       buzzer: buzzerData,
       config: configData,
+      internetMode: false,
     };
   } catch (error) {
     console.error("Error fetching buzzer/config data:", error);

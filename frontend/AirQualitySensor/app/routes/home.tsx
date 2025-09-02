@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchSensorData, sensorData, onlineState } from "~/helpers";
+import { fetchSensorData, sensorData, onlineState, config } from "~/helpers";
 import type { Route } from "./+types/home";
 import Dashboard, { DashboardSkeleton } from "~/components/Dashboard";
 import React, { type JSX } from "react";
@@ -9,25 +9,94 @@ import { Await } from "react-router";
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
   async function updateSensorData() {
-    const data = await fetchSensorData();
-    
-    if (data) {
-      (sensorData.MQ135 = [
-        ...sensorData.MQ135.slice(-14),
-        { name: new Date().toLocaleTimeString(), ...data.MQ135 },
-      ]),
-        (sensorData.MQ2 = [
+    if (config.internetMode) {
+      try {
+        const resp = await fetch(
+          "https://airqualitysensor-cb6c8-default-rtdb.asia-southeast1.firebasedatabase.app/espData.json"
+        );
+        const json = await resp.json();
+        sensorData.isOnline = onlineState.online;
+        
+        if (json && typeof json === "object") {
+          const keys = Object.keys(json);
+          const last15Keys = keys.slice(-15);
+          const latestKey = keys[keys.length - 1];
+          const latestData = json[latestKey];
+
+          if (!sensorData.MQ135?.length) {
+            // initialize with last 15 entries
+            sensorData.MQ135 = last15Keys.map((ts) => ({
+              name: new Date(Number(ts) * 1000).toLocaleTimeString(),
+              ...json[ts].mq135,
+            }));
+            sensorData.MQ2 = last15Keys.map((ts) => ({
+              name: new Date(Number(ts) * 1000).toLocaleTimeString(),
+              ...json[ts].mq2,
+            }));
+            sensorData.DHT11 = last15Keys.map((ts) => ({
+              name: new Date(Number(ts) * 1000).toLocaleTimeString(),
+              ...json[ts].dht,
+            }));
+          } else {
+            const lastEntryName =
+              sensorData.MQ135[sensorData.MQ135.length - 1]?.name;
+            const newName = new Date(Number(latestKey) * 1000).toLocaleTimeString();
+
+            if (lastEntryName !== newName) {
+              sensorData.MQ135 = [
+                ...sensorData.MQ135.slice(-14),
+                { name: newName, ...latestData.mq135 },
+              ];
+              sensorData.MQ2 = [
+                ...sensorData.MQ2.slice(-14),
+                { name: newName, ...latestData.mq2 },
+              ];
+              sensorData.DHT11 = [
+                ...sensorData.DHT11.slice(-14),
+                { name: newName, ...latestData.dht },
+              ];
+            }
+          }
+
+          // always set latest rawData snapshot
+          sensorData.rawData = {
+            MQ135: latestData.mq135,
+            MQ2: latestData.mq2,
+            DHT11: latestData.dht,
+          };
+
+          sensorData.isOnline = onlineState.online;
+        } else {
+          sensorData.isOnline = onlineState.offline;
+        }
+      } catch (e) {
+        console.error("Failed fetching Firebase data:", e);
+        sensorData.isOnline = onlineState.offline;
+      }
+    } else {
+      const data = await fetchSensorData();
+      if (data) {
+        sensorData.MQ135 = [
+          ...sensorData.MQ135.slice(-14),
+          { name: new Date().toLocaleTimeString(), ...data.MQ135 },
+        ];
+        sensorData.MQ2 = [
           ...sensorData.MQ2.slice(-14),
           { name: new Date().toLocaleTimeString(), ...data.MQ2 },
-        ]),
-        (sensorData.DHT11 = [
+        ];
+        sensorData.DHT11 = [
           ...sensorData.DHT11.slice(-14),
           { name: new Date().toLocaleTimeString(), ...data.DHT11 },
-        ]),
-        (sensorData.rawData = data.fullResponse);
-      sensorData.isOnline = onlineState.online;
-    } else {
-      sensorData.isOnline = onlineState.offline;
+        ];
+        sensorData.rawData = {
+          MQ135: data.MQ135,
+          MQ2: data.MQ2,
+          DHT11: data.DHT11,
+        };
+        sensorData.isOnline = onlineState.online;
+      } else {
+        sensorData.isOnline = onlineState.offline;
+      }
     }
   }
 

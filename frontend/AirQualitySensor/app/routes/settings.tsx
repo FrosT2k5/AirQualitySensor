@@ -24,6 +24,14 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   let formData = await request.formData();
 
   // Parse data from form
+  let internetMode = formData.get("internetMode") as string;
+  if (internetMode === "true") {
+    config.internetMode = true;
+
+    saveSettings();
+    return null;
+  }
+
   let ipAddr = formData.get("ipAddr") as string;
   let samplingRate = Math.max(5000, Number(formData.get("samplingRate"))); // Ensure minimum 5,000
   let enableBuzzer = formData.get("enableBuzzer") as string;
@@ -39,6 +47,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
   config.apiHost = ipAddr;
   config.samplingRate = samplingRate;
+  config.internetMode = false;
   saveSettings();
   return null;
 }
