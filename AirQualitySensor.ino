@@ -3,6 +3,7 @@
 #include "mq2.h"
 #include "dht11.h"
 #include "server.h"
+#include "FirebaseHelper.h"
 #include "esp_task_wdt.h"
 
 TaskHandle_t Task1_Handle;
@@ -51,7 +52,7 @@ void load_preferences() {
 }
 
 // Task for Core 1 (Display, Buzzer, and Sensors)
-void Task1_Core1(void *pvParameters) {
+void Task_UpdateDisplay_Core1(void *pvParameters) {
     while (true) {
         MQ135.update();
         MQ2.update();
@@ -138,7 +139,7 @@ void Task1_Core1(void *pvParameters) {
 }
 
 // Task for Core 0 (WiFi & Server)
-void Task2_Core0(void *pvParameters) {
+void Task_WebServer_Core0(void *pvParameters) {
   while (true) {
     WiFiClient client = server.available();
     if (client.connected()) {
@@ -167,6 +168,15 @@ void Task_DHTReader(void *pvParameters) {
     }
 }
 
+// Firebase Uploader Task
+void Task_FirebaseDataUploader(void *pvParameters) {
+    while (true) {
+        pushAllSensorsToFirebase();
+        vTaskDelay(FIREBASE_SAMPLING_FREQUENCY / portTICK_PERIOD_MS);
+    }
+}
+
+
 void setup() {
     Serial.begin(115200);
     lcd.init();
@@ -188,9 +198,10 @@ void setup() {
         .trigger_panic = true,
     };
     esp_task_wdt_reconfigure(&config);
-    xTaskCreatePinnedToCore(Task1_Core1, "Task1", 10000, NULL, 1, &Task1_Handle, 1); // Core 1
+    xTaskCreatePinnedToCore(Task_UpdateDisplay_Core1, "DisplayUpdater", 10000, NULL, 1, &Task1_Handle, 1); // Core 1
     xTaskCreatePinnedToCore(Task_DHTReader, "DHTReader", 4000, NULL, 2, NULL, 1);  // Core 1
-    xTaskCreatePinnedToCore(Task2_Core0, "Task2", 10000, NULL, 1, &Task2_Handle, 0); // Core 0
+    xTaskCreatePinnedToCore(Task_WebServer_Core0, "WebServer", 10000, NULL, 1, &Task2_Handle, 0); // Core 0
+    xTaskCreatePinnedToCore(Task_FirebaseDataUploader, "FirebaseUploader", 10000, NULL, 1, NULL, 0); // Core 0
 }
 
 void loop() {

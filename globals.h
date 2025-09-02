@@ -54,5 +54,7 @@ void load_preferences();
 // WiFi Credentials
 // const char* ssid = "abcd";
 // const char* password = "1234";
+// const char* FIREBASE_REFERENCE_URL = "abcd";
+// const char* FIREBASE_AUTH_TOKEN = "abcd";
 
 #endif
