@@ -21,12 +21,13 @@ import { FiCheckCircle, FiHome, FiMenu, FiSettings, FiXCircle } from "react-icon
 import { NavLink } from "react-router"; // Ensure correct import
 import { useColorModeValue, ColorModeButton } from "./ui/color-mode";
 import { useConnection } from "./ui/ConnectionContext";
-import { onlineState, sensorData } from "../helpers";
+import { onlineState } from "../helpers";
 import { Tooltip } from "./ui/tooltip";
-import { FaFireAlt } from "react-icons/fa";
+import { FaFireAlt, FaHistory } from "react-icons/fa";
 
 const LinkItems = [
   { name: "Dashboard", to: "/", Icon: FiHome},
+  { name: "History", to: "/history", Icon: FaHistory},
   { name: "Settings", to: "/settings", Icon: FiSettings },
   { name: "About", to: "/about", Icon: FaFireAlt},
 ];

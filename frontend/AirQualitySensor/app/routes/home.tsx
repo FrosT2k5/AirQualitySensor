@@ -5,6 +5,7 @@ import type { Route } from "./+types/home";
 import Dashboard, { DashboardSkeleton } from "~/components/Dashboard";
 import React, { type JSX } from "react";
 import { Await } from "react-router";
+import { airQualityScore } from "~/components/QualityScoreChart";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
@@ -63,7 +64,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
             MQ135: latestData.mq135,
             MQ2: latestData.mq2,
             DHT11: latestData.dht,
+            score: 0,
           };
+          const score = airQualityScore(sensorData.rawData, "average");
+          sensorData.rawData.score = score;
+
 
           sensorData.isOnline = onlineState.online;
         } else {
@@ -89,6 +94,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
           { name: new Date().toLocaleTimeString(), ...data.DHT11 },
         ];
         sensorData.rawData = data.fullResponse;
+        sensorData.rawData.score = airQualityScore(sensorData.rawData, "average");
         sensorData.isOnline = onlineState.online;
       } else {
         sensorData.isOnline = onlineState.offline;

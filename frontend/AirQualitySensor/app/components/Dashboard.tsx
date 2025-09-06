@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Container, Grid, GridItem, Heading, Skeleton, SkeletonText, Text } from '@chakra-ui/react'
+import { Box, Center, Container, Grid, GridItem, Heading, Skeleton, SkeletonText, Text } from '@chakra-ui/react'
 import {  useEffect } from 'react';
 import MQ135Chart from './MQ135Chart';
 import { config, loadSettings, sensorData, type sensorDataStateType} from '../helpers';
@@ -8,6 +8,7 @@ import MQ2Chart from './MQ2Chart';
 import DHT11Chart from './DHTChart';
 import { useRevalidator } from 'react-router';
 import { useConnection } from './ui/ConnectionContext';
+import QualityScoreChart, { airQualityScore } from './QualityScoreChart';
 
 type Props = {
   children?: React.ReactNode,
@@ -110,6 +111,16 @@ function Dashboard({}: Props) {
         <ChartBox> 
         <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> DHT11 Readings (°C/%): </Text>
             <DHT11Chart data={sensorData["DHT11"]}/>
+          </ChartBox>
+        </GridItem>
+
+        <GridItem colSpan={2}>
+          <ChartBox> 
+            <Text textAlign="center" mt="2" mb="2" fontWeight="bold"> Air Quality Verdict (%): </Text>
+            <QualityScoreChart score={sensorData.rawData.score}/>
+            <Box textAlign={"center"} mt='20'>
+              <Text fontSize="xl"> Air Quality Score: {(100 - sensorData.rawData.score)} %</Text>
+            </Box>
           </ChartBox>
         </GridItem>
 

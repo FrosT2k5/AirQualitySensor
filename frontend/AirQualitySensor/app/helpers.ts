@@ -38,6 +38,7 @@ export let sensorData: sensorDataStateType = {
     MQ135: { CO2: 0, CO: 0, Alcohol: 0},
     MQ2: { LPG: 0, Propane: 0, CO: 0},
     DHT11: { temperature: 0, humidity: 0},
+    score: 0
   },
   isOnline: onlineState.loading,
 }
@@ -49,7 +50,7 @@ type configType = {
 };
 
 // Type declarations
-type MQ135Data = {
+export type MQ135Data = {
   CO2: number;
   CO: number;
   Alcohol: number;
@@ -59,7 +60,7 @@ type MQ135Data = {
   Raw?: number;
 };
 
-type MQ2Data = {
+export type MQ2Data = {
   H2?: number;
   LPG: number;
   CO: number;
@@ -73,10 +74,11 @@ type DHT11Data = {
   humidity: number;
 };
 
-type FullSensorResponse = {
+export type FullSensorResponse = {
   MQ135: MQ135Data,
   MQ2: MQ2Data,
   DHT11: DHT11Data,
+  score: number,
 }
 
 export type SensorData = {
@@ -176,7 +178,7 @@ export const fetchSensorData = async (): Promise<{
         temperature: dht11Res.temperature,
         humidity: dht11Res.humidity,
       },
-      fullResponse: { MQ135: mq135Res, MQ2: mq2Res, DHT11: dht11Res },
+      fullResponse: { MQ135: mq135Res, MQ2: mq2Res, DHT11: dht11Res, score: 0 },
     };
   } catch (error) {
     console.error("Error fetching sensor data:", error);
