@@ -88,11 +88,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
           ...sensorData.DHT11.slice(-14),
           { name: new Date().toLocaleTimeString(), ...data.DHT11 },
         ];
-        sensorData.rawData = {
-          MQ135: data.MQ135,
-          MQ2: data.MQ2,
-          DHT11: data.DHT11,
-        };
+        sensorData.rawData = data.fullResponse;
         sensorData.isOnline = onlineState.online;
       } else {
         sensorData.isOnline = onlineState.offline;
