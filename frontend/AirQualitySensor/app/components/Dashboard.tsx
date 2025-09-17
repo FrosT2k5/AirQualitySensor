@@ -26,7 +26,7 @@ export function DashboardSkeleton() {
   return (
     <Container mt="4">
       <Heading textStyle="3xl" fontWeight="bold" mb="5">
-        <Skeleton height="32px" width="200px" />
+        Dashboard
       </Heading>
       
       <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(4, 1fr)" }} gap="6">

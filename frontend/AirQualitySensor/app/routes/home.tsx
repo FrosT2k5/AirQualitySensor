@@ -69,7 +69,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
           const score = airQualityScore(sensorData.rawData, "average");
           sensorData.rawData.score = score;
 
-
+          console.log(sensorData)
           sensorData.isOnline = onlineState.online;
         } else {
           sensorData.isOnline = onlineState.offline;

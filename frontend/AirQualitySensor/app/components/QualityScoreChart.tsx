@@ -93,12 +93,13 @@ type Props = {
 
 export default function QualityScoreChart({ score }: Props) {
   // determine which segment is active
-  const colors = chartData.map((segment, index) => {
+
+  const colors = useMemo(() => chartData.map((segment, index) => {
     if (score <= 30 && index === 0) return ACTIVE_COLORS[0]; // green active
     if (score > 30 && score <= 60 && index === 1) return ACTIVE_COLORS[1]; // yellow active
     if (score > 60 && index === 2) return ACTIVE_COLORS[2]; // red active
     return INACTIVE_COLOR; // others grey
-  });
+  }), [score]);
 
   return (
     <ResponsiveContainer width="100%" height={200}>
