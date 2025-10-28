@@ -1,6 +1,6 @@
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const QualityBarChart = ({ data }) => {
+const QualityBarChart = ({ data }: { data: { name: string; score: number }[] }) => {
   return (
     <ResponsiveContainer width="100%" height="90%">
       <BarChart
