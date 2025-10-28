@@ -115,80 +115,84 @@ export default function HistoryDashboard({ loaderData }: Props) {
   }
 
   async function exportData() {
-    if (filteredData.length === 0) {
-      notify('warning', 'No data to export');
+    if (!startDate || !endDate) {
+      notify('warning', 'Please select start and end dates');
       return;
     }
 
-    const dhtKeys = new Set<string>();
-    const mq135Keys = new Set<string>();
-    const mq2Keys = new Set<string>();
-
-    filteredData.forEach(([_, value]) => {
-      if (value.dht) Object.keys(value.dht).forEach((k) => dhtKeys.add(k));
-      if (value.mq135) Object.keys(value.mq135).forEach((k) => mq135Keys.add(k));
-      if (value.mq2) Object.keys(value.mq2).forEach((k) => mq2Keys.add(k));
-    });
-
-    const headers: string[] = ["timestamp"];
-    const dhtCols = Array.from(dhtKeys).map((k) => `dht_${k}`);
-    const mq135Cols = Array.from(mq135Keys).map((k) => `mq135_${k}`);
-    const mq2Cols = Array.from(mq2Keys).map((k) => `mq2_${k}`);
-
-    headers.push(...dhtCols, ...mq135Cols, ...mq2Cols);
-
-    const startStr = startDate ? startOfDay(startDate).toISOString().slice(0,10) : new Date().toISOString().slice(0,10);
-    const endStr = endDate ? endOfDay(endDate).toISOString().slice(0,10) : startStr;
+    const startStr = startOfDay(startDate).toISOString().slice(0, 10);
+    const endStr = endOfDay(endDate).toISOString().slice(0, 10);
     const filenameBase = `airquality_${startStr}_to_${endStr}`;
 
     try {
-      if (exportFormat === 'csv') {
-  const resp = await fetch(FIREBASE_ESP_URL);
-        if (!resp.ok) {
-          throw new Error(`Failed to fetch API data: ${resp.status} ${resp.statusText}`);
-        }
+      // Fetch full JSON data from Firebase
+      const resp = await fetch(FIREBASE_ESP_URL);
+      if (!resp.ok) {
+        throw new Error(`Failed to fetch API data: ${resp.status} ${resp.statusText}`);
+      }
 
-        const fullJson = await resp.json();
+      const fullJson = await resp.json();
+      const entries = Object.entries(fullJson)
+        .map(([ts, v]) => [Number(ts), v as any] as [number, any])
+        .sort(([a], [b]) => a - b);
 
-        const entries = Object.entries(fullJson)
-          .map(([ts, v]) => [Number(ts), v as any] as [number, any])
-          .sort(([a], [b]) => a - b);
+      // Filter by date range
+      const startTs = startOfDay(startDate).getTime() / 1000;
+      const endTs = endOfDay(endDate).getTime() / 1000;
+      const filteredFromApi = entries.filter(([ts]) => ts >= startTs && ts <= endTs);
 
-        const startTs = startOfDay(startDate ?? new Date()).getTime() / 1000;
-        const effectiveEnd = endDate ?? startDate ?? new Date();
-        const endTs = endOfDay(effectiveEnd).getTime() / 1000;
+      if (filteredFromApi.length === 0) {
+        notify('warning', 'No data available in selected range');
+        return;
+      }
 
-        const filteredFromApi = entries.filter(([ts]) => ts >= startTs && ts <= endTs);
+      // Collect dynamic keys
+      const dhtKeys = new Set<string>();
+      const mq135Keys = new Set<string>();
+      const mq2Keys = new Set<string>();
 
-        const rows: string[] = [];
-        rows.push(headers.join(","));
+      filteredFromApi.forEach(([_, value]) => {
+        if (value.dht) Object.keys(value.dht).forEach((k) => dhtKeys.add(k));
+        if (value.mq135) Object.keys(value.mq135).forEach((k) => mq135Keys.add(k));
+        if (value.mq2) Object.keys(value.mq2).forEach((k) => mq2Keys.add(k));
+      });
 
-        filteredFromApi.forEach(([ts, value]) => {
-          const cols: string[] = [];
-          cols.push(new Date(Number(ts) * 1000).toISOString());
+      // Build headers
+      const headers: string[] = ["timestamp"];
+      const dhtCols = Array.from(dhtKeys).map((k) => `dht_${k}`);
+      const mq135Cols = Array.from(mq135Keys).map((k) => `mq135_${k}`);
+      const mq2Cols = Array.from(mq2Keys).map((k) => `mq2_${k}`);
+      headers.push(...dhtCols, ...mq135Cols, ...mq2Cols);
 
-          dhtCols.forEach((col) => {
-            const key = col.replace(/^dht_/, "");
-            const v = value.dht && value.dht[key] !== undefined ? String(value.dht[key]) : "";
-            cols.push(escapeCsv(v));
-          });
+      // Build rows (shared for CSV & XLSX)
+      const dataMatrix: any[][] = [];
+      dataMatrix.push(headers);
 
-          mq135Cols.forEach((col) => {
-            const key = col.replace(/^mq135_/, "");
-            const v = value.mq135 && value.mq135[key] !== undefined ? String(value.mq135[key]) : "";
-            cols.push(escapeCsv(v));
-          });
+      filteredFromApi.forEach(([ts, value]) => {
+        const row: any[] = [];
+        row.push(new Date(Number(ts) * 1000).toISOString());
 
-          mq2Cols.forEach((col) => {
-            const key = col.replace(/^mq2_/, "");
-            const v = value.mq2 && value.mq2[key] !== undefined ? String(value.mq2[key]) : "";
-            cols.push(escapeCsv(v));
-          });
-
-          rows.push(cols.join(","));
+        dhtCols.forEach((col) => {
+          const key = col.replace(/^dht_/, "");
+          row.push(value.dht?.[key] ?? "");
         });
 
-        const csv = rows.join("\n");
+        mq135Cols.forEach((col) => {
+          const key = col.replace(/^mq135_/, "");
+          row.push(value.mq135?.[key] ?? "");
+        });
+
+        mq2Cols.forEach((col) => {
+          const key = col.replace(/^mq2_/, "");
+          row.push(value.mq2?.[key] ?? "");
+        });
+
+        dataMatrix.push(row);
+      });
+
+      // Export according to selected format
+      if (exportFormat === 'csv') {
+        const csv = dataMatrix.map((r) => r.map(escapeCsv).join(",")).join("\n");
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -202,32 +206,7 @@ export default function HistoryDashboard({ loaderData }: Props) {
       } else {
         try {
           const XLSX = await import('xlsx');
-          const aoa: any[] = [];
-          aoa.push(headers);
-
-          filteredData.forEach(([ts, value]) => {
-            const row: any[] = [];
-            row.push(new Date(Number(ts) * 1000).toISOString());
-
-            dhtCols.forEach((col) => {
-              const key = col.replace(/^dht_/, "");
-              row.push(value.dht && (value.dht as any)[key] !== undefined ? (value.dht as any)[key] : "");
-            });
-
-            mq135Cols.forEach((col) => {
-              const key = col.replace(/^mq135_/, "");
-              row.push(value.mq135 && (value.mq135 as any)[key] !== undefined ? (value.mq135 as any)[key] : "");
-            });
-
-            mq2Cols.forEach((col) => {
-              const key = col.replace(/^mq2_/, "");
-              row.push(value.mq2 && (value.mq2 as any)[key] !== undefined ? (value.mq2 as any)[key] : "");
-            });
-
-            aoa.push(row);
-          });
-
-          const ws = XLSX.utils.aoa_to_sheet(aoa);
+          const ws = XLSX.utils.aoa_to_sheet(dataMatrix);
           const wb = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(wb, ws, 'Data');
           const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
