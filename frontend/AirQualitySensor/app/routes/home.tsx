@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchSensorData, sensorData, onlineState, config } from "~/helpers";
+import { fetchSensorData, sensorData, onlineState, config, FIREBASE_ESP_URL } from "~/helpers";
 import type { Route } from "./+types/home";
 import Dashboard, { DashboardSkeleton } from "~/components/Dashboard";
 import React, { type JSX } from "react";
@@ -12,9 +12,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   async function updateSensorData() {
     if (config.internetMode) {
       try {
-        const resp = await fetch(
-          "https://airqualitysensor-cb6c8-default-rtdb.asia-southeast1.firebasedatabase.app/espData.json"
-        );
+        const resp = await fetch(FIREBASE_ESP_URL);
         const json = await resp.json();
         sensorData.isOnline = onlineState.online;
         
