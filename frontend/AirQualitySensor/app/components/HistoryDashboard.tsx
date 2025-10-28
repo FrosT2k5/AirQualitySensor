@@ -21,7 +21,7 @@ import { useColorModeValue } from "./ui/color-mode";
 import MQ135Chart from './MQ135Chart';
 import MQ2Chart from './MQ2Chart';
 import DHT11Chart from './DHTChart';
-import type { SensorData, MQ135Data, MQ2Data } from "../helpers";
+import type { SensorData, MQ135Data, MQ2Data, DHT11Data } from "../helpers";
 import QualityScoreChart, { airQualityScore } from './QualityScoreChart';
 import QualityBarChart from "./QualityBarChart";
 import './styles/datepicker.css';
@@ -29,11 +29,14 @@ export function HistoryDashboardFallback() {
   return <Text>Fallback here</Text>;
 }
 
-type LoaderData = Record<string, {
-  dht: { temperature: number; humidity: number };
-  mq135: MQ135Data;
-  mq2: MQ2Data;
-}>;
+type LoaderData = Record<
+  string,
+  {
+    dht: DHT11Data;
+    mq135: MQ135Data;
+    mq2: MQ2Data;
+  }
+>;
 
 type Props = {
   loaderData: LoaderData;

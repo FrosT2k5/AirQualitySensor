@@ -69,7 +69,7 @@ export type MQ2Data = {
   Raw?: number;
 };
 
-type DHT11Data = {
+export type DHT11Data = {
   temperature: number;
   humidity: number;
 };
