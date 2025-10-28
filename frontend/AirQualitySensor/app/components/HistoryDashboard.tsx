@@ -94,9 +94,9 @@ export default function HistoryDashboard({ loaderData }: Props) {
     return sampled;
   }, [loaderData, startDate, endDate]);
 
-  const mq135Data = filteredData.map(([ts, value]) => ({ name: new Date(Number(ts) * 1000).toLocaleString(), ...value.mq135 })) as unknown as SensorData[];
-  const mq2Data = filteredData.map(([ts, value]) => ({ name: new Date(Number(ts) * 1000).toLocaleString(), ...value.mq2 })) as unknown as SensorData[];
-  const dhtData = filteredData.map(([ts, value]) => ({ name: new Date(Number(ts) * 1000).toLocaleString(), ...value.dht })) as unknown as SensorData[];
+  const mq135Data = filteredData.map(([ts, value]) => ({ name: new Date(Number(ts) * 1000).toLocaleString(), ...value.mq135 })) as SensorData[];
+  const mq2Data = filteredData.map(([ts, value]) => ({ name: new Date(Number(ts) * 1000).toLocaleString(), ...value.mq2 })) as SensorData[];
+  const dhtData = filteredData.map(([ts, value]) => ({ name: new Date(Number(ts) * 1000).toLocaleString(), ...value.dht })) as SensorData[];
 
   const hasFilteredData = filteredData.length > 0;
 
