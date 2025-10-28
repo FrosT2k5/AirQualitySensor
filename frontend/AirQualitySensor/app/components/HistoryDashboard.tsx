@@ -24,6 +24,7 @@ import DHT11Chart from './DHTChart';
 import type { SensorData, MQ135Data, MQ2Data, DHT11Data } from "../helpers";
 import QualityScoreChart, { airQualityScore } from './QualityScoreChart';
 import QualityBarChart from "./QualityBarChart";
+import { FIREBASE_ESP_URL } from "~/helpers";
 import './styles/datepicker.css';
 export function HistoryDashboardFallback() {
   return <Text>Fallback here</Text>;
@@ -142,28 +143,45 @@ export default function HistoryDashboard({ loaderData }: Props) {
 
     try {
       if (exportFormat === 'csv') {
+  const resp = await fetch(FIREBASE_ESP_URL);
+        if (!resp.ok) {
+          throw new Error(`Failed to fetch API data: ${resp.status} ${resp.statusText}`);
+        }
+
+        const fullJson = await resp.json();
+
+        const entries = Object.entries(fullJson)
+          .map(([ts, v]) => [Number(ts), v as any] as [number, any])
+          .sort(([a], [b]) => a - b);
+
+        const startTs = startOfDay(startDate ?? new Date()).getTime() / 1000;
+        const effectiveEnd = endDate ?? startDate ?? new Date();
+        const endTs = endOfDay(effectiveEnd).getTime() / 1000;
+
+        const filteredFromApi = entries.filter(([ts]) => ts >= startTs && ts <= endTs);
+
         const rows: string[] = [];
         rows.push(headers.join(","));
 
-        filteredData.forEach(([ts, value]) => {
+        filteredFromApi.forEach(([ts, value]) => {
           const cols: string[] = [];
           cols.push(new Date(Number(ts) * 1000).toISOString());
 
           dhtCols.forEach((col) => {
             const key = col.replace(/^dht_/, "");
-            const v = value.dht && (value.dht as any)[key] !== undefined ? String((value.dht as any)[key]) : "";
+            const v = value.dht && value.dht[key] !== undefined ? String(value.dht[key]) : "";
             cols.push(escapeCsv(v));
           });
 
           mq135Cols.forEach((col) => {
             const key = col.replace(/^mq135_/, "");
-            const v = value.mq135 && (value.mq135 as any)[key] !== undefined ? String((value.mq135 as any)[key]) : "";
+            const v = value.mq135 && value.mq135[key] !== undefined ? String(value.mq135[key]) : "";
             cols.push(escapeCsv(v));
           });
 
           mq2Cols.forEach((col) => {
             const key = col.replace(/^mq2_/, "");
-            const v = value.mq2 && (value.mq2 as any)[key] !== undefined ? String((value.mq2 as any)[key]) : "";
+            const v = value.mq2 && value.mq2[key] !== undefined ? String(value.mq2[key]) : "";
             cols.push(escapeCsv(v));
           });
 
@@ -180,7 +198,7 @@ export default function HistoryDashboard({ loaderData }: Props) {
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
-  notify('success', 'CSV downloaded', `${filenameBase}.csv`);
+        notify('success', 'CSV downloaded', `${filenameBase}.csv`);
       } else {
         try {
           const XLSX = await import('xlsx');

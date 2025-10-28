@@ -43,6 +43,8 @@ export let sensorData: sensorDataStateType = {
   isOnline: onlineState.loading,
 }
 
+export const FIREBASE_ESP_URL = "https://airqualitysensor-cb6c8-default-rtdb.asia-southeast1.firebasedatabase.app/espData.json";
+
 type configType = {
   samplingRate: number;
   apiHost: string;
