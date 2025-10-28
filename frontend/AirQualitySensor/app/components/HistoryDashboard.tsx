@@ -8,6 +8,8 @@ import {
   Button,
   Flex,
   Select,
+  Skeleton,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { useConnection } from "./ui/ConnectionContext";
 import React from 'react';
@@ -26,8 +28,80 @@ import QualityScoreChart, { airQualityScore } from './QualityScoreChart';
 import QualityBarChart from "./QualityBarChart";
 import { FIREBASE_ESP_URL } from "~/helpers";
 import './styles/datepicker.css';
+
 export function HistoryDashboardFallback() {
-  return <Text>Fallback here</Text>;
+  return (
+    <Container mt="4">
+      <Heading textStyle="3xl" fontWeight="bold" mb="5">
+        History Dashboard
+      </Heading>
+
+      <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} gap="6">
+
+        {/* Date Range Picker Skeleton */}
+        <GridItem>
+          <Box
+            h="440px"
+            border="solid 1px"
+            borderRadius="15px"
+            borderColor="InactiveBorder"
+            shadow="lg"
+            p="4"
+          >
+            <Flex alignItems="center" justifyContent="space-between" mb="6">
+              <SkeletonText noOfLines={1} w="50%" />
+              <Skeleton w="90px" h="35px" borderRadius="8px" />
+            </Flex>
+            <Box mx="8" textAlign="center">
+              <Skeleton height="320px" borderRadius="10px" />
+            </Box>
+          </Box>
+        </GridItem>
+
+        {/* MQ135 Chart Skeleton */}
+        <GridItem>
+          <Box h="440px" border="solid 1px" borderRadius="15px" borderColor="InactiveBorder" shadow="lg" p="4">
+            <SkeletonText noOfLines={1} mb="4" w="60%" />
+            <Skeleton height="360px" borderRadius="10px" />
+          </Box>
+        </GridItem>
+
+        {/* MQ2 Chart Skeleton */}
+        <GridItem>
+          <Box h="440px" border="solid 1px" borderRadius="15px" borderColor="InactiveBorder" shadow="lg" p="4">
+            <SkeletonText noOfLines={1} mb="4" w="60%" />
+            <Skeleton height="360px" borderRadius="10px" />
+          </Box>
+        </GridItem>
+
+        {/* DHT11 Chart Skeleton */}
+        <GridItem>
+          <Box h="440px" border="solid 1px" borderRadius="15px" borderColor="InactiveBorder" shadow="lg" p="4">
+            <SkeletonText noOfLines={1} mb="4" w="60%" />
+            <Skeleton height="360px" borderRadius="10px" />
+          </Box>
+        </GridItem>
+
+        {/* Air Quality Score Skeleton */}
+        <GridItem>
+          <Box h="440px" border="solid 1px" borderRadius="15px" borderColor="InactiveBorder" shadow="lg" p="4">
+            <SkeletonText noOfLines={1} mb="4" w="70%" />
+            <Skeleton height="260px" borderRadius="full" w="260px" mx="auto" my="10" />
+            <SkeletonText noOfLines={1} w="50%" mx="auto" />
+          </Box>
+        </GridItem>
+
+        {/* Air Quality Bar Chart Skeleton */}
+        <GridItem>
+          <Box h="440px" border="solid 1px" borderRadius="15px" borderColor="InactiveBorder" shadow="lg" p="4">
+            <SkeletonText noOfLines={1} mb="4" w="70%" />
+            <Skeleton height="360px" borderRadius="10px" />
+          </Box>
+        </GridItem>
+
+      </Grid>
+    </Container>
+  );
 }
 
 type LoaderData = Record<
